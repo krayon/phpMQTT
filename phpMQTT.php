@@ -472,6 +472,8 @@ class phpMQTT
                 ) . '$/',
                 $topic
             )) {
+                $found = true;
+
                 if ($top['function'] === '__direct_return_message__') {
                     return $msg;
                 }

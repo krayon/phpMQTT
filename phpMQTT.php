@@ -31,7 +31,7 @@ namespace Bluerhinos;
 	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 	THE SOFTWARE.
-	
+
 */
 
 /* phpMQTT */
@@ -384,8 +384,9 @@ class phpMQTT
      * @param $content
      * @param int $qos
      * @param bool $retain
+     * @return bool True if success
      */
-    public function publish($topic, $content, $qos = 0, $retain = false): void
+    public function publish($topic, $content, $qos = 0, $retain = false): bool
     {
         $i = 0;
         $buffer = '';
@@ -416,7 +417,7 @@ class phpMQTT
         $head .= $this->setmsglength($i);
 
         fwrite($this->socket, $head, strlen($head));
-        $this->_fwrite($buffer);
+        return (strlen($buffer) === $this->_fwrite($buffer));
     }
 
     /**
@@ -431,11 +432,9 @@ class phpMQTT
         $buffer_length = strlen($buffer);
         for ($written = 0; $written < $buffer_length; $written += $fwrite) {
             $fwrite = fwrite($this->socket, substr($buffer, $written));
-            if ($fwrite === false) {
-                return false;
-            }
+            if ($fwrite === false) break;
         }
-        return $buffer_length;
+        return $written;
     }
 
     /**
